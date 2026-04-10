@@ -6,10 +6,6 @@
  #include "semphr.h"
  
  
-/*
- Events enum -added here as its shared
- NOTE: DO NOT ADD THESE EVENTS: open gate button released, close gate button realased ...etc TEAM 1 SHOULD handle this logic  
-*/ 
 typedef enum {
 	//do we add a start event to start the system ??
 	EV_DRIVER_OPEN_GATE,
@@ -20,10 +16,23 @@ typedef enum {
 	EV_LIMIT_OPENING,
 	EV_LIMIT_CLOSING,
 	
-	EV_STOP_GATE,  //this event is sent when buttons get released (for manual mode handling)!!
+	//release events for handling manual mode
+  EV_DRIVER_OPEN_RELEASED,
+	EV_DRIVER_CLOSE_RELEASED,
+	EV_SECURITY_OPEN_RELEASED,
+	EV_SECURITY_CLOSE_RELEASED,
+	
+	//conflict events
+	EV_DRIVER_CONFLICT, //TEAM 1 sends this when they catch simulatneous open and close signals(AT THE SAME TIME) FROM THE DRIVER'S PANEL ONLY
+	EV_SECURITY_CONFLICT,//TEAM 1 sends this when they catch simulatneous open and close signals(AT THE SAME TIME) FROM THE SECURITY'S PANEL ONLY
 	
 	EV_DETECT_OBSTACLE
 }Event_t;
+
+
+//queue and mutex handler
+ extern QueueHandle_t evQueue;
+ extern SemaphoreHandle_t stateMutex; 
 
 //init mutual queues..etc
  void int_IPComm(void);

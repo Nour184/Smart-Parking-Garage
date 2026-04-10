@@ -10,12 +10,11 @@
  
  #include "shared_queues.h"
 
- 
- QueueHandle_t evQueue = NULL;
- SemaphoreHandle_t stateMutex = NULL; 
+QueueHandle_t evQueue = NULL;
+SemaphoreHandle_t stateMutex = NULL;
  
  void int_IPComm(void){
-	 //what size shwould we assign??
+	 //what size should we assign??
 	 evQueue = xQueueCreate(15,sizeof(Event_t));
 	 
 	 stateMutex = xSemaphoreCreateMutex();

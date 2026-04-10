@@ -16,7 +16,7 @@
 
 void gateControlTask(void* pvParameters){
 	//init gate state 
-	//initGateStatus();
+	initGateStatus();
 	Event_t incomingEV;
 	while(1){
 		//continously read from queue
@@ -25,7 +25,7 @@ void gateControlTask(void* pvParameters){
 		if(status == pdTRUE){
 		//try to acquire the mutex to update the gate state
 		 if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE){ //block untill i can acquire the mutex
-			 //updateGateStatus(incomingEV); //update the gate status 
+			 updateGateStatus(incomingEV); //update the gate status 
 			 xSemaphoreGive(stateMutex);
 		 }
 	 }

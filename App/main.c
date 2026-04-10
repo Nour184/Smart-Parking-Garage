@@ -8,8 +8,7 @@
  * - Create FreeRTOS tasks
  * - Start the scheduler.
  */
- #include "FreeRTOS.h"
- #include "task.h"
+
  #include "gate_controller.h"
  
  int main(){

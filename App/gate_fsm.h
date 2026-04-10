@@ -12,6 +12,11 @@ typedef enum {
 	REVERSING
 }GateState_t;
 
+typedef enum {
+	NONE,
+	DRIVER,
+	SECURITY
+}CmdOwner_t;
 
 //functions declaration 
 void initGateStatus(void);
