@@ -18,7 +18,7 @@
 	 //how much stack do i allocate?? and what priority do i assign-> its supposed to be medium 
 	 xTaskCreate(gateControlTask, "gate controller task",300, NULL,3,NULL);	 
 	 
-	 //call system init functions
+	 //call system init functions before scheduler
 	 int_IPComm();
 	 
 	 
