@@ -25,8 +25,18 @@ void gateControlTask(void* pvParameters){
 		if(status == pdTRUE){
 		//try to acquire the mutex to update the gate state
 		 if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE){ //block untill i can acquire the mutex
-			 updateGateStatus(incomingEV); //update the gate status 
+			 
+			 CmdOwner_t ownerBefore = getCurrentOwner(); //for testing script
+			 
+			 GateState_t state = updateGateStatus(incomingEV); //update the gate status 
+			 
+			 CmdOwner_t ownerAfter = getCurrentOwner(); //for testing script
+			 
 			 xSemaphoreGive(stateMutex);
+			 //for testing script
+			 UART0_SendChar((uint8_t)ownerBefore); 
+			 UART0_SendChar((uint8_t)state);
+			 UART0_SendChar((uint8_t)ownerAfter);
 		 }
 	 }
 	}

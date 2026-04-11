@@ -20,6 +20,11 @@
 	 return gateState; //since we cant return from the function without returning the mutex first (deadlock)!!
  }
  
+ CmdOwner_t getCurrentOwner(void){
+    // Safe to return directly because the calling task already holds the Mutex!
+    return currentOwner; 
+}
+ 
  //some function handlers
  static void handle_IdleClosed(Event_t ev){
 	 if(ev == EV_SECURITY_OPEN_GATE){ //higher priority
