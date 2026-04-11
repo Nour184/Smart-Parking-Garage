@@ -14,8 +14,14 @@
  int main(){
 	 
 	 //Task Creation
-	 //how much stack do i allocate?? and what priority do i assign-> its supposed to be medium 
-	 xTaskCreate(gateControlTask, "gate controller task",300, NULL,3,NULL);	 
+	 /*
+	 priorites:
+	  Medium  -> 2
+	  Hight   -> 3
+	  Highest -> 4
+	 */
+	 //how much stack do i allocate??
+	 xTaskCreate(gateControlTask, "gate controller task",300, NULL,2,NULL);	 
 	 
 	 //call system init functions before scheduler
 	 int_IPComm();

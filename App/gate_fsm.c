@@ -95,6 +95,7 @@
 		 case EV_DETECT_OBSTACLE: //highest priority of all 
 			 currentGateState = REVERSING;
 		   currentOwner = NONE;  //reset onwnership
+		   xQueueReset(evQueue); //SOOOOO IMP TO FLUSH THE QUEUE FROM OLDER EVENTS THAT WE NO LONGER NEED TO EXECUTE!!!
 		  break;
 		 case EV_LIMIT_CLOSING:
 			 currentGateState = IDLE_CLOSED;
@@ -177,7 +178,14 @@
 	 }
  }
  static void handle_Reversing(Event_t ev){
-	 //DO WHAT U GOTTA DO YA WALADY 
+	 switch(ev){
+		 case EV_REVERSE_TIMEOUT:
+			 currentGateState = STOPPED_MIDWAY;
+		   currentOwner = NONE;
+		 break;
+		 default:
+			 break;
+	 }
  }
 	 
 //logic for updating the gate state based on the input events form the queue
@@ -199,7 +207,7 @@
 			 handle_StoppingMidway(ev);
 		 break;
 		 case REVERSING: //handle reversing logic here 
-			 //DO WHAT U GOTTA DO YA WALADY BRDO - Handled by TEAM 3!!
+			 //DO WHAT U GOTTA DO YA WALADY BRDO - Handled by TEAM 3!!   la dh tl3 ana hehe :) zorry
 		   handle_Reversing(ev);
 		 break;
 	 }

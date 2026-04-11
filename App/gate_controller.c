@@ -15,7 +15,7 @@
 //implement the function that is called by xTaskCreate() in main!!
 
 void gateControlTask(void* pvParameters){
-	//init gate state 
+	//init gate state and  ownership
 	initGateStatus();
 	Event_t incomingEV;
 	while(1){
