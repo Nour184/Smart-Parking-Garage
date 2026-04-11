@@ -48,6 +48,7 @@
 		 case EV_LIMIT_OPENING: //handling limit reached case
 			 currentGateState = IDLE_OPENED;
 		   currentOwner = NONE; //reset ownership
+		   xQueueReset(evQueue); //flush old events
 		  break;
 		 case EV_SECURITY_CONFLICT:
 			 currentGateState = STOPPED_MIDWAY; //no need to check the currentOwner here as security has the highest priority always
@@ -100,6 +101,7 @@
 		 case EV_LIMIT_CLOSING:
 			 currentGateState = IDLE_CLOSED;
 		   currentOwner = NONE;
+		   xQueueReset(evQueue); //flush the queue here too 
 		  break; 
 		 //handle conflicts
 		 case EV_SECURITY_CONFLICT: //no need to check ownership

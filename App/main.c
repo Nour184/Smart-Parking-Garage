@@ -21,7 +21,7 @@
 	  Highest -> 4
 	 */
 	 //how much stack do i allocate??
-	 xTaskCreate(gateControlTask, "gate controller task",300, NULL,2,NULL);	 
+	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);	 
 	 
 	 //call system init functions before scheduler
 	 int_IPComm();
