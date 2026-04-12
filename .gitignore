@@ -15,6 +15,7 @@
 *.uvoptx
 *.uvguix.*
 *.uvgui.*
+*.scvd
 
 Objects/
 Listings/
