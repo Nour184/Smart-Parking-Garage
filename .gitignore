@@ -1,0 +1,27 @@
+*.o
+*.d
+*.crf
+*.htm
+*.map
+*.lnp
+*.axf
+*.sct
+*.dep
+*.hex
+*.bin
+*.plg
+*.iex
+
+*.uvoptx
+*.uvguix.*
+*.uvgui.*
+*.scvd
+
+Objects/
+Listings/
+DebugConfig/
+EventRecorder/
+
+#os generated files
+.DS_Store
+Thumbs.db
