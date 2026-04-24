@@ -10,6 +10,7 @@
  */
 
  #include "gate_controller.h"
+ #include "safety_monitor.h"
  
  
  /*
@@ -59,6 +60,7 @@
 	 //how much stack do i allocate??
 	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);	 
 	 xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
+     xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
 	 
 	 //call system init functions before scheduler
 	 int_IPComm();

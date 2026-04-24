@@ -12,6 +12,7 @@
 
 QueueHandle_t evQueue = NULL;
 SemaphoreHandle_t stateMutex = NULL;
+SemaphoreHandle_t obstacleSemaphore = NULL;
  
  void int_IPComm(void){
 	 //what size should we assign??
