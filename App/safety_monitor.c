@@ -6,7 +6,6 @@
  * - When semaphore is given, instantly override current FSM state.
  * - Force the 0.5-second reverse logic (REVERSING state) and then stop completely.
  */
-#include "shared_queues.h"
 #include "gate_fsm.h"
 #include "safety_monitor.h"
 
