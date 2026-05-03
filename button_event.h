@@ -1,0 +1,18 @@
+#ifndef BUTTON_EVENT_H
+#define BUTTON_EVENT_H
+
+typedef enum
+{
+    BTN_DRIVER_OPEN = 0,
+    BTN_DRIVER_CLOSE,
+
+    BTN_SECURITY_OPEN,
+    BTN_SECURITY_CLOSE,
+
+    BTN_OPEN_LIMIT,
+    BTN_CLOSED_LIMIT,
+    BTN_OBSTACLE
+
+} ButtonId_t;
+
+#endif

@@ -23,4 +23,4 @@
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\task.h \
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\list.h \
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\queue.h \
-  input_task.h gpio_driver.h event.h
+  input_task.h gpio_driver.h event.h button_event.h

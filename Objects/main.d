@@ -22,7 +22,6 @@
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\mpu_wrappers.h \
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\task.h \
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\list.h \
-  Required_Files\Required_Files\basic_io.h gpio_driver.h event.h \
-  Input_task.h \
+  Required_Files\Required_Files\basic_io.h gpio_driver.h \
   C:\Users\Zeinab\AppData\Local\Arm\Packs\ARM\CMSIS-FreeRTOS\11.2.0\Source\include\queue.h \
-  Receive_task.h
+  event.h Input_task.h Receive_task.h button_event.h ledTask.h
