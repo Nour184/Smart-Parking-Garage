@@ -3,16 +3,11 @@
 #include "queue.h"
 
 #include "input_task.h"
-#include "gpio_driver.h"
-#include "event.h"
-#include "button_event.h"
+#include "../Drivers/button_driver.h"
+#include "../Drivers/event.h"
 
 #define DEBOUNCE_MS             20
 #define ONE_TOUCH_THRESHOLD_MS  300
-
-extern QueueHandle_t xGateEventQueue;
-extern QueueHandle_t xLEDEventQueue;
-extern QueueHandle_t xButtonInterruptQueue;
 
 typedef struct
 {
@@ -56,7 +51,6 @@ static void SendEvent(EventType_t type)
     ev.time = xTaskGetTickCount();
 
     xQueueSend(xGateEventQueue, &ev, 0);
-    xQueueSend(xLEDEventQueue,  &ev, 0);
 }
 
 static void Button_Init(ButtonObject_t *btn,

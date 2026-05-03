@@ -10,7 +10,8 @@
  */
 
  #include "gate_controller.h"
- 
+ #include "input_task.h"
+ #include "../Drivers/button_driver.h"
  
  /*
  will add a mock task (input task) here for testing purposes!!
@@ -46,19 +47,17 @@
  
  int main(){
 	 
-	 //for testing
-	 UART0_Init();
+	  //for testing
+	  UART0_Init();
 
-     // initialize GPIO
-     GPIO_AllInit();
-     InputTask_Init();
+    // initialize GPIO
+    GPIO_AllInit();
+    InputTask_Init();
 
-     // initialize event queues
-     xLEDEventQueue = xQueueCreate(20, sizeof(GateEvent_t));
-	 xButtonInterruptQueue = xQueueCreate(20, sizeof(ButtonId_t));
+    // initialize event queues
+	  xButtonInterruptQueue = xQueueCreate(20, sizeof(ButtonId_t));
 
-     if (xLEDEventQueue == NULL ||
-    xButtonInterruptQueue == NULL)
+    if (xButtonInterruptQueue == NULL)
 
     {
 		while (1);
@@ -72,8 +71,7 @@
 	  Highest -> 4
 	 */
 	 //how much stack do i allocate??
-     xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
- 	 xTaskCreate(vLEDTask, "LED", 256, NULL, 2, NULL);
+   xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
 	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);	 
 	 xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
 	 
