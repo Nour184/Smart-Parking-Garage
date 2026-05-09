@@ -1,7 +1,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-
+# include "../IPC/shared_queues.h"
 #include "input_task.h"
 #include "../Drivers/button_driver.h"
 #include "../Drivers/event.h"
