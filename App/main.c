@@ -12,7 +12,11 @@
  #include "gate_controller.h"
  #include "safety_monitor.h"
  #include "led_task.h"
+ #include "test_config.h"
  
+ #if TEST_SAFETY
+ #include "shared_queues.h"
+ #endif
  
  /*
  will add a mock task (input task) here for testing purposes!!
@@ -25,7 +29,7 @@
         // 1. Read byte from the Python HIL script
         rxByte = UART0_ReceiveChar(); 
         incomingEvent = (Event_t)rxByte;
-
+				#if TEST_FSM
         // 2. Route the event based on your Team 1 specifications
         if (incomingEvent == EV_LIMIT_OPENING || incomingEvent == EV_LIMIT_CLOSING) {
             // High priority: Push to the FRONT of the queue so the FSM stops immediately
@@ -42,6 +46,12 @@
             // Normal priority (buttons, releases, conflicts): Push to the BACK of the queue
             xQueueSendToBack(evQueue, &incomingEvent, portMAX_DELAY); 
         }
+				#endif
+				#if TEST_SAFETY
+				if(incomingEvent == 0x0){
+					xSemaphoreGive(obstacleSemaphore);
+				}
+				#endif
 				vTaskDelay(pdMS_TO_TICKS(10));
     }
  }
@@ -50,6 +60,9 @@
 	 
 	 //for testing
 	 UART0_Init(); 
+	 #if TEST_SAFETY
+	 UART0_SendChar('s');
+	 #endif
 	 
 	 portF_init();
 	 

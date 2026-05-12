@@ -10,7 +10,7 @@
  
 
 #include "gate_controller.h"
-
+#include "test_config.h"
 
 //implement the function that is called by xTaskCreate() in main!!
 
@@ -34,9 +34,11 @@ void gateControlTask(void* pvParameters){
 			 
 			 xSemaphoreGive(stateMutex);
 			 //for testing script
+			 #if TEST_FSM
 			 UART0_SendChar((uint8_t)ownerBefore); 
 			 UART0_SendChar((uint8_t)state);
 			 UART0_SendChar((uint8_t)ownerAfter);
+			 #endif
 		 }
 	 }
 	}
