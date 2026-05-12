@@ -11,6 +11,7 @@
 
  #include "gate_controller.h"
  #include "safety_monitor.h"
+ #include "led_task.h"
  
  
  /*
@@ -50,6 +51,8 @@
 	 //for testing
 	 UART0_Init(); 
 	 
+	 portF_init();
+	 
 	 //Task Creation
 	 /*
 	 priorites:
@@ -60,8 +63,8 @@
 	 //how much stack do i allocate??
 	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);	 
 	 xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
-     xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
-	 
+   xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
+	 xTaskCreate(LedTask, "Controls System Leds", 150, NULL, 2, NULL);
 	 //call system init functions before scheduler
 	 int_IPComm();
 	 

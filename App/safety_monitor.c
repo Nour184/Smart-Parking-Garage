@@ -13,11 +13,18 @@ void safetyTask(void *pvParameters)
 {
     while(1)
     {   
-        xSemaphoreTake(obstacleSemaphore, portMAX_DELAY);
-        forceGateState(REVERSING);
-        // TODO: CHANGE LED COLOR
-        vTaskDelay(pdMS_TO_TICKS(REVERSE_DELAY_MS));
-        forceGateState(STOPPED_MIDWAY);
+        xSemaphoreTake(obstacleSemaphore, portMAX_DELAY); // Block until I recieve an obstacle
+        forceGateState(REVERSING); // FORCE sate to be reversing; so any input gets ignored
+        
+				xQueueReset(ledQueue); // Flush the queue
+				const Led_t ev_led = EV_SET_RED;
+			
+				xQueueSend(ledQueue, (void *)(&ev_led), 0); // Send ev_led to LED Task, then block.
+        vTaskDelay(pdMS_TO_TICKS(REVERSE_DELAY_MS)); // reverse for a certain period.
+        forceGateState(STOPPED_MIDWAY); // change state back so inputs are not ignored by FSM.
+			
+				const Led_t ev_reset_led = EV_RESET_LED;
+				xQueueSend(ledQueue, (void *)(&ev_reset_led), 0); // send ev_reset_led to LED Task, then block on obstacle semphr
         xQueueReset(evQueue);
     }
 }

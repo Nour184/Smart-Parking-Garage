@@ -13,15 +13,19 @@
 QueueHandle_t evQueue = NULL;
 SemaphoreHandle_t stateMutex = NULL;
 SemaphoreHandle_t obstacleSemaphore = NULL;
+QueueHandle_t ledQueue = NULL;
  
  void int_IPComm(void){
 	 //what size should we assign??
 	 evQueue = xQueueCreate(15,sizeof(Event_t));
 	 
 	 stateMutex = xSemaphoreCreateMutex();
+
+     ledQueue = xQueueCreate(15, sizeof(Led_t));
 	 //safety catch if mutex or queue werent initialized correctly
-	 if(stateMutex == NULL || evQueue == NULL){
+	 if(ledQueue == NULL || stateMutex == NULL || evQueue == NULL){
 		 while(1);
 	 }
+
  }
  
