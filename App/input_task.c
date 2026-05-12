@@ -40,40 +40,48 @@ static ButtonObject_t obstacleBtn;
 
 static void SendEvent(EventType_t type)
 {
-	switch (type)
+    // 1. Declare the variable ONCE at the top of the function
+    Event_t eventToSend;
+
+    switch (type)
     {
-    	case EVT_DRIVER_OPEN_PRESS || EVT_DRIVER_OPEN_AUTO:
-        	xQueueSendToBack(evQueue, EV_DRIVER_OPEN_GATE, portMAX_DELAY);
-            break;
-        case EVT_DRIVER_CLOSE_PRESS || EVT_DRIVER_CLOSE_AUTO:
-        	xQueueSendToBack(evQueue, EV_DRIVER_CLOSE_GATE, portMAX_DELAY);
-        	break;
-
-        case EVT_SECURITY_OPEN_PRESS || EVT_SECURITY_OPEN_AUTO:
-          	xQueueSendToBack(evQueue, EV_SECURITY_OPEN_GATE, portMAX_DELAY);
-            break;
-        case EVT_SECURITY_CLOSE_PRESS || EVT_SECURITY_CLOSE_AUTO:
-          	xQueueSendToBack(evQueue, EV_SECURITY_CLOSE_GATE, portMAX_DELAY);
+        case EVT_DRIVER_OPEN_PRESS:
+        case EVT_DRIVER_OPEN_AUTO:
+            eventToSend = EV_DRIVER_OPEN_GATE; // 2. Just assign the value
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
             break;
 
-        case EVT_DRIVER_OPEN_RELEASE
-			xQueueSendToBack(evQueue, EV_DRIVER_OPEN_RELEASED, portMAX_DELAY);
-			break;
-		case EVT_DRIVER_CLOSE_RELEASE
-			xQueueSendToBack(evQueue, EV_DRIVER_CLOSE_RELEASED, portMAX_DELAY);
-			break;
-		case EVT_SECURITY_OPEN_RELEASE
-			xQueueSendToBack(evQueue, EV_DRIVER_CLOSE_RELEASED, portMAX_DELAY);
-			break;
-		case EVT_SECURITY_CLOSE_RELEASE
-			xQueueSendToBack(evQueue, EV_SECURITY_CLOSE_RELEASED, portMAX_DELAY);
-			break;
+        case EVT_DRIVER_CLOSE_PRESS:
+        case EVT_DRIVER_CLOSE_AUTO:
+            eventToSend = EV_DRIVER_CLOSE_GATE;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
 
-		case EVT_OBSTACLE_PRESS:
-          break;
+        case EVT_DRIVER_OPEN_RELEASE:
+            eventToSend = EV_DRIVER_OPEN_RELEASED;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_DRIVER_CLOSE_RELEASE:
+            eventToSend = EV_DRIVER_CLOSE_RELEASED;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_SECURITY_OPEN_RELEASE:
+            eventToSend = EV_SECURITY_OPEN_RELEASED;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_SECURITY_CLOSE_RELEASE:
+            eventToSend = EV_SECURITY_CLOSE_RELEASED;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_OBSTACLE_PRESS:
+            break;
 
         default:
-        	break;
+            break;
     }
 }
 
