@@ -38,6 +38,7 @@ static ButtonObject_t openLimitBtn;
 static ButtonObject_t closedLimitBtn;
 static ButtonObject_t obstacleBtn;
 
+
 static void SendEvent(EventType_t type)
 {
     Event_t eventToSend;
@@ -99,6 +100,16 @@ static void SendEvent(EventType_t type)
             break;
 
         case EVT_OBSTACLE_PRESS:
+            break;
+				
+				case EVT_DRIVER_CONFLICT:
+            eventToSend = EV_DRIVER_CONFLICT;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_SECURITY_CONFLICT:
+            eventToSend = EV_SECURITY_CONFLICT;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
             break;
 
         default:
@@ -304,29 +315,64 @@ static uint8_t IsManualButtonReleased(ButtonId_t buttonId)
     }
 }
 
+static uint8_t IsDriverConflict(void)
+{
+    return (Read_DriverOpen() == 1 && Read_DriverClose() == 1);
+}
+
+static uint8_t IsSecurityConflict(void)
+{
+    return (Read_SecurityOpen() == 1 && Read_SecurityClose() == 1);
+}
+
+
 void vInputTask(void *pvParameters)
 {
     ButtonId_t buttonId;
 
     (void) pvParameters;
 
-    while (1)
+   while (1)
+{
+    if (xQueueReceive(xButtonInterruptQueue,
+                      &buttonId,
+                      portMAX_DELAY) == pdPASS)
     {
-        if (xQueueReceive(xButtonInterruptQueue,
-                          &buttonId,
-                          portMAX_DELAY) == pdPASS)
+        vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
+
+        if (IsSecurityConflict())
         {
-            vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
+            SendEvent(EVT_SECURITY_CONFLICT);
 
-            ProcessButtonById(buttonId);
-
-            while (IsManualButtonReleased(buttonId) == 0)
+            while (IsSecurityConflict())
             {
-                ProcessButtonById(buttonId);
                 vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
             }
 
-            ProcessButtonById(buttonId);
+            continue;
         }
+
+        if (IsDriverConflict())
+        {
+            SendEvent(EVT_DRIVER_CONFLICT);
+
+            while (IsDriverConflict())
+            {
+                vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
+            }
+
+            continue;
+        }
+
+        ProcessButtonById(buttonId);
+
+        while (IsManualButtonReleased(buttonId) == 0)
+        {
+            ProcessButtonById(buttonId);
+            vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
+        }
+
+        ProcessButtonById(buttonId);
     }
+}
 }
