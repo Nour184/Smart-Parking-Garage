@@ -224,7 +224,7 @@
 		 case EV_DRIVER_CLOSE_GATE:
 			 currentGateState = CLOSING;
 		   currentOwner = DRIVER;
-           led = EV_SET_GREEN;
+           led = EV_SET_RED;
            xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 
