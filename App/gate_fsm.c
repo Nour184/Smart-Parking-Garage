@@ -206,3 +206,10 @@
 	 return currentGateState;
  }
  
+
+void forceGateState(GateState_t newState)
+{
+    xSemaphoreTake(stateMutex, portMAX_DELAY);
+    currentGateState = newState;
+    currentOwner = NONE;
+    xSemaphoreGive(stateMutex); }
