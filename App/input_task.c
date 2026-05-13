@@ -66,6 +66,18 @@ static void SendEvent(EventType_t type)
             xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
             break;
 
+        case EVT_SECURITY_OPEN_PRESS:
+        case EVT_SECURITY_OPEN_AUTO:
+            eventToSend = EV_SECURITY_OPEN_GATE;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_SECURITY_CLOSE_PRESS:
+        case EVT_SECURITY_CLOSE_AUTO:
+            eventToSend = EV_SECURITY_CLOSE_GATE;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
         case EVT_SECURITY_OPEN_RELEASE:
             eventToSend = EV_SECURITY_OPEN_RELEASED;
             xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
@@ -73,6 +85,16 @@ static void SendEvent(EventType_t type)
 
         case EVT_SECURITY_CLOSE_RELEASE:
             eventToSend = EV_SECURITY_CLOSE_RELEASED;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_OPEN_LIMIT_PRESS:
+            eventToSend = EV_LIMIT_OPENING;
+            xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
+            break;
+
+        case EVT_CLOSED_LIMIT_PRESS:
+            eventToSend = EV_LIMIT_CLOSING;
             xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
             break;
 
