@@ -9,7 +9,7 @@ typedef enum {
 		GREEN_LED = (1 << 3)
 } LED_COLOR;
 
-void portF_init(void);
+void portF_led_init(void);
 void portF_set_led(LED_COLOR bit_mask);
 void portF_reset_led(void);
 

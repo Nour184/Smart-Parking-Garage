@@ -13,6 +13,8 @@
  #include "safety_monitor.h"
  #include "led_task.h"
  #include "test_config.h"
+ #include "input_task.h"
+ #include "button_driver.h"
  
  #if TEST_SAFETY
  #include "shared_queues.h"
@@ -60,7 +62,7 @@ void uartInputTask(void *pvParameters){
 	 UART0_SendChar('s');
 	 #endif
 	 
-	 portF_init();
+	 portF_led_init();
    GPIO_AllInit();
    InputTask_Init();
 	 

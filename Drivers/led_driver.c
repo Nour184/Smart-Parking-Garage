@@ -9,7 +9,7 @@
 #define PORTF (1<<5) // bit 5
 #define PORTF1 (1<<1) // 
  
-void portF_init(void){
+void portF_led_init(void){
 	SYSCTL_RCGCGPIO_R |= PORTF;
 	while((SYSCTL_PRGPIO_R & PORTF)==0){};
 	GPIO_PORTF_DIR_R |= 0xE;
