@@ -103,6 +103,7 @@ static void SendEvent(EventType_t type)
             break;
 
         case EVT_OBSTACLE_PRESS:
+            xSemaphoreGive(obstacleSemaphore);
             break;
 
         default:
