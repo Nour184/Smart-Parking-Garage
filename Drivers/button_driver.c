@@ -65,6 +65,7 @@ static void GPIOB_Init(void)
     SYSCTL->RCGCGPIO |= (1U << 1);
     while ((SYSCTL->PRGPIO & (1U << 1)) == 0);
 
+		GPIOB->LOCK = 0x4C4F434B;
     GPIOB->CR |= 0x1F;
 
     GPIOB->AMSEL &= ~0x1F;

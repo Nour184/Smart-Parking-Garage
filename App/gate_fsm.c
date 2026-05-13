@@ -27,48 +27,65 @@
  
  //some function handlers
  static void handle_IdleClosed(Event_t ev){
+     Led_t led = EV_SET_GREEN;
 	 if(ev == EV_SECURITY_OPEN_GATE){ //higher priority
 		 currentGateState = OPENING;
 		 currentOwner = SECURITY;
+         xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 	 }
 	 else if(ev == EV_DRIVER_OPEN_GATE){
 		 currentGateState = OPENING;
 		 currentOwner = DRIVER;
+         xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 	 }
  }
  
  static void handle_IdleOpened(Event_t ev){
+   Led_t led = EV_SET_RED;
 	 if(ev == EV_SECURITY_CLOSE_GATE){
 		 currentGateState = CLOSING;
 		 currentOwner = SECURITY;
+         xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 	 }
 	 else if(ev == EV_DRIVER_CLOSE_GATE){
 		 currentGateState = CLOSING;
 		 currentOwner = DRIVER;
+         xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 	 }
  }
  
  static void handle_Opening(Event_t ev){
+     Led_t led;
 	 switch(ev){
 		 case EV_LIMIT_OPENING: //handling limit reached case
 			 currentGateState = IDLE_OPENED;
 		   currentOwner = NONE; //reset ownership
 		   xQueueReset(evQueue); //flush old events
+           led = EV_RESET_LED;
+           xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 case EV_SECURITY_CONFLICT:
 			 currentGateState = STOPPED_MIDWAY; //no need to check the currentOwner here as security has the highest priority always
 		   currentOwner = NONE;
+           led = EV_RESET_LED;
+           xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 case EV_DRIVER_CONFLICT:
 			 if(currentOwner == DRIVER){    //if owner is SECURITY ignore the conflict!!
 			 currentGateState = STOPPED_MIDWAY;
 			 currentOwner = NONE;
+             led = EV_RESET_LED;
+             xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		 }
 			 break;
 		 case EV_SECURITY_CLOSE_GATE:
-			 currentGateState = CLOSING;
-		   currentOwner = SECURITY;
-		  break;
+		 	 currentGateState = CLOSING;
+		       currentOwner = SECURITY;
+               led = EV_RESET_LED;
+               xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
+               led = EV_SET_RED;
+               xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
+		      break;
 		 case EV_SECURITY_OPEN_GATE: //upgrade ownership if the currentOwner is not security!!
 			 currentOwner = SECURITY;
 		  break;
@@ -76,6 +93,10 @@
 			 if(currentOwner == DRIVER){
 			 currentGateState = CLOSING;
 			 currentOwner = DRIVER;
+               led = EV_RESET_LED;
+               xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
+               led = EV_SET_RED;
+               xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		 }
 		 break;
 		 //handle manual mode - releasing the button
@@ -83,12 +104,16 @@
 			 if(currentOwner == SECURITY) {
        currentGateState = STOPPED_MIDWAY;
        currentOwner = NONE;
+        led = EV_RESET_LED;
+       xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
      }
-			 break;
+		break;
 		 case EV_DRIVER_OPEN_RELEASED:
 			 if(currentOwner == DRIVER) {
        currentGateState = STOPPED_MIDWAY;
        currentOwner = NONE;
+       led = EV_RESET_LED;
+       xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
       }
 			 break;
 		 default :
@@ -97,27 +122,38 @@
  }
  
  static void handle_Closing(Event_t ev){
+     Led_t led;
 	 switch(ev){
 		 case EV_LIMIT_CLOSING:
 			 currentGateState = IDLE_CLOSED;
 		   currentOwner = NONE;
-		   xQueueReset(evQueue); //flush the queue here too 
-		  break; 
+		   xQueueReset(evQueue); //flush the queue here too
+		   led = EV_RESET_LED;
+            xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
+             break;
 		 //handle conflicts
 		 case EV_SECURITY_CONFLICT: //no need to check ownership
 			 currentGateState = STOPPED_MIDWAY;
 		   currentOwner = NONE;
+            led = EV_RESET_LED;
+            xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 case EV_DRIVER_CONFLICT:
 			 if(currentOwner == DRIVER){
 				 currentGateState = STOPPED_MIDWAY;
 				 currentOwner = NONE;
+                led = EV_RESET_LED;
+                 xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 			 }
 		  break;
 			 //handle security commands
 		 case EV_SECURITY_OPEN_GATE: //one touch case by the way so no conflict
 			 currentGateState = OPENING;
 		   currentOwner = SECURITY;
+           	led = EV_RESET_LED;
+            xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
+            led = EV_SET_GREEN;
+            xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 case EV_SECURITY_CLOSE_GATE: //change ownership only!!
 			 currentOwner = SECURITY;
@@ -128,6 +164,10 @@
 			 if(currentOwner == DRIVER){
 				 currentGateState = OPENING;
 				 currentOwner = DRIVER;
+                led = EV_RESET_LED;
+                xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
+                led = EV_SET_GREEN;
+                xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 			 }
 		  break;
 			 //handle release event for manual mode
@@ -135,12 +175,16 @@
 			 if(currentOwner == SECURITY){
 				 currentGateState = STOPPED_MIDWAY;
 				 currentOwner = NONE;
+                led = EV_RESET_LED;
+                xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 			 }
 			 break;
 		 case EV_DRIVER_CLOSE_RELEASED:
 			 if(currentOwner == DRIVER){
 				 currentGateState = STOPPED_MIDWAY;
 				 currentOwner = NONE;
+                led = EV_RESET_LED;
+                xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 			 }
 			 break;
 			
@@ -150,29 +194,38 @@
 	 
  }
  static void handle_StoppingMidway(Event_t ev){
+     Led_t led;
 	 switch(ev){
 		 case EV_SECURITY_CONFLICT:
 		 case EV_DRIVER_CONFLICT:
-			 currentGateState = STOPPED_MIDWAY; //for the test case ig TC-15/16 
+			 currentGateState = STOPPED_MIDWAY; //for the test case ig TC-15/16
 		   currentOwner = NONE;
 		  break; 
 		 //security cmds come first
 		 case EV_SECURITY_OPEN_GATE:
 			 currentGateState = OPENING;
 		   currentOwner = SECURITY;
+           led = EV_SET_GREEN;
+           xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		 break;
 		 case EV_SECURITY_CLOSE_GATE:
 			 currentGateState = CLOSING;
 		   currentOwner = SECURITY;
+           led = EV_SET_RED;
+           xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		 break;
 		 //lastly drivers cmds
 		 case EV_DRIVER_OPEN_GATE:
 			 currentGateState = OPENING;
-		   currentOwner = DRIVER;
+	         currentOwner = DRIVER;
+            led = EV_SET_GREEN;
+            xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 case EV_DRIVER_CLOSE_GATE:
 			 currentGateState = CLOSING;
 		   currentOwner = DRIVER;
+           led = EV_SET_GREEN;
+           xQueueSend(ledQueue, (void*)&led, portMAX_DELAY);
 		  break;
 		 
 		 default:

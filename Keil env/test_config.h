@@ -1,2 +1,2 @@
-#define TEST_SAFETY 1
+#define TEST_SAFETY 0
 #define TEST_FSM 0

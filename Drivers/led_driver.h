@@ -6,7 +6,7 @@
 typedef enum {
     RED_LED = (1 << 1),
     BLUE_LED = (1 << 2),
-		GREEN_LED = (1 << 3)
+    GREEN_LED = (1 << 3)
 } LED_COLOR;
 
 void portF_led_init(void);

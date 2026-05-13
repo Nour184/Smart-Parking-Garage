@@ -183,9 +183,11 @@ static void ProcessButton(ButtonObject_t *btn)
     TickType_t now = xTaskGetTickCount();
     uint8_t raw = btn->readFunc();
 
+    // Only reset timer on a genuine change
     if (raw != btn->state.lastRaw)
     {
         btn->state.lastChangeTime = now;
+        btn->state.lastRaw = raw;        // ? move update here, inside the change block
     }
 
     if ((now - btn->state.lastChangeTime) >= pdMS_TO_TICKS(DEBOUNCE_MS))
@@ -229,6 +231,7 @@ static void ProcessButton(ButtonObject_t *btn)
             }
         }
 
+        // Manual/auto hold detection
         if (btn->supportManualAuto == 1 &&
             btn->state.stableState == 1 &&
             btn->state.manualSent == 0)
@@ -242,8 +245,6 @@ static void ProcessButton(ButtonObject_t *btn)
             }
         }
     }
-
-    btn->state.lastRaw = raw;
 }
 
 static void ProcessButtonById(ButtonId_t buttonId)
@@ -312,9 +313,7 @@ void vInputTask(void *pvParameters)
 
     while (1)
     {
-        if (xQueueReceive(xButtonInterruptQueue,
-                          &buttonId,
-                          portMAX_DELAY) == pdPASS)
+        if (xQueueReceive(xButtonInterruptQueue, &buttonId, portMAX_DELAY) == pdPASS)
         {
             vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
 
