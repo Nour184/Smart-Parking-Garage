@@ -18,15 +18,11 @@
  #include "shared_queues.h"
  #endif
  
- /*
- will add a mock task (input task) here for testing purposes!!
- */
- 
- void uartInputTask(void *pvParameters){
-	 uint8_t rxByte;
-   Event_t incomingEvent;
-   while(1) {
-        // 1. Read byte from the Python HIL script
+void uartInputTask(void *pvParameters){
+	uint8_t rxByte;
+   	Event_t incomingEvent;
+   	while(1) {
+    	// 1. Read byte from the Python HIL script
         rxByte = UART0_ReceiveChar(); 
         incomingEvent = (Event_t)rxByte;
 				#if TEST_FSM
@@ -65,6 +61,8 @@
 	 #endif
 	 
 	 portF_init();
+   GPIO_AllInit();
+   InputTask_Init();
 	 
 	 //Task Creation
 	 /*

@@ -1,0 +1,39 @@
+#ifndef EVENTS_H
+#define EVENTS_H
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+typedef enum
+{
+    EVT_NONE = 0,
+
+    EVT_DRIVER_OPEN_PRESS,
+    EVT_DRIVER_OPEN_RELEASE,
+    EVT_DRIVER_OPEN_AUTO,
+
+    EVT_DRIVER_CLOSE_PRESS,
+    EVT_DRIVER_CLOSE_RELEASE,
+    EVT_DRIVER_CLOSE_AUTO,
+
+    EVT_SECURITY_OPEN_PRESS,
+    EVT_SECURITY_OPEN_RELEASE,
+    EVT_SECURITY_OPEN_AUTO,
+
+    EVT_SECURITY_CLOSE_PRESS,
+    EVT_SECURITY_CLOSE_RELEASE,
+    EVT_SECURITY_CLOSE_AUTO,
+
+    EVT_OPEN_LIMIT_PRESS,
+    EVT_CLOSED_LIMIT_PRESS,
+    EVT_OBSTACLE_PRESS
+
+} EventType_t;
+
+typedef struct
+{
+    EventType_t type;
+    TickType_t time;
+} GateEvent_t;
+
+#endif

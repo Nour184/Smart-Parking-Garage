@@ -409,6 +409,9 @@
               <FileName>led_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\App\led_task.c</FilePath>
+              <FileName>input_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\App\input_task.c</FilePath>
             </File>
           </Files>
         </Group>
