@@ -19,8 +19,12 @@ void safetyTask(void *pvParameters)
     while(1)
     {   
         xSemaphoreTake(obstacleSemaphore, portMAX_DELAY); // Block until I recieve an obstacle
+
+    	GateState_t currentState = getCurrentGateState();
+		if (currentState != CLOSING) continue;
+
         forceGateState(REVERSING); // FORCE sate to be reversing; so any input gets ignored
-        
+
 				xQueueReset(ledQueue); // Flush the queue
 				const Led_t ev_led = EV_SET_GREEN;
 				xQueueSend(ledQueue, (void *)(&ev_led), 0); // Send ev_led to LED Task, then block.

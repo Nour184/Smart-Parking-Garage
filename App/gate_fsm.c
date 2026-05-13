@@ -266,3 +266,4 @@ void forceGateState(GateState_t newState)
     currentGateState = newState;
     currentOwner = NONE;
     xSemaphoreGive(stateMutex); }
+
