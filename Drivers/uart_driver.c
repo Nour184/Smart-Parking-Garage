@@ -30,6 +30,7 @@ void UART0_Init(void) {
     GPIO_PORTA_AMSEL_R &= ~0x03;
     
     UART0_CTL_R |= 0x301;
+		
 }
 
 void UART0_SendChar(uint8_t data) {
@@ -37,9 +38,18 @@ void UART0_SendChar(uint8_t data) {
     UART0_DR_R = data;
 }
 
+void UART0_send_string(const char* msg){
+			  while(*msg != '\n' && *msg != '\0'){
+					UART0_SendChar(*msg);
+					msg++;
+				}
+				UART0_SendChar('\0');
+}
 
 uint8_t UART0_ReceiveChar(void) {
     // Wait while the Receive FIFO is Empty (RXFE bit is 1)
-    while((UART0_FR_R & 0x10) != 0);
+    while((UART0_FR_R & 0x10) != 0)
+			vTaskDelay(pdMS_TO_TICKS(1));
     return (uint8_t)(UART0_DR_R & 0xFF);
 }
+

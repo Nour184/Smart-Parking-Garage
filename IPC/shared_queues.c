@@ -21,11 +21,12 @@ QueueHandle_t ledQueue = NULL;
 	 
 	 stateMutex = xSemaphoreCreateMutex();
 
-     ledQueue = xQueueCreate(15, sizeof(Led_t));
+   ledQueue = xQueueCreate(15, sizeof(Led_t));
 	 //safety catch if mutex or queue werent initialized correctly
 	 if(ledQueue == NULL || stateMutex == NULL || evQueue == NULL){
 		 while(1);
 	 }
-
+	
+	 obstacleSemaphore = xSemaphoreCreateBinary();
  }
  
