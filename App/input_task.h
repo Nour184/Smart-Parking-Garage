@@ -3,8 +3,6 @@
 
 #include "FreeRTOS.h"
 
-extern QueueHandle_t xButtonInterruptQueue;
-
 void vInputTask(void *pvParameters);
 void InputTask_Init(void);
 

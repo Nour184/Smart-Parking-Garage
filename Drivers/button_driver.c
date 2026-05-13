@@ -28,7 +28,7 @@
 
 #include "button_driver.h"
 
-extern QueueHandle_t xButtonInterruptQueue;
+QueueHandle_t xButtonInterruptQueue = NULL;
 
 /* ================= PORT F ================= */
 static void GPIOF_Init(void)
@@ -90,6 +90,12 @@ void GPIO_AllInit(void)
 {
     GPIOF_Init();
     GPIOB_Init();
+
+    xButtonInterruptQueue = xQueueCreate(20, sizeof(ButtonId_t));
+    if (xButtonInterruptQueue == NULL)
+	{
+		while (1);
+	}
 }
 
 

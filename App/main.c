@@ -9,19 +9,19 @@
  * - Start the scheduler.
  */
 
- #include "gate_controller.h"
- #include "input_task.h"
- #include "../Drivers/button_driver.h"
+#include "gate_controller.h"
+#include "input_task.h"
+#include "../Drivers/button_driver.h"
  
- /*
- will add a mock task (input task) here for testing purposes!!
- */
+/*
+will add a mock task (input task) here for testing purposes!!
+*/
  
- void uartInputTask(void *pvParameters){
-	 uint8_t rxByte;
-   Event_t incomingEvent;
-   while(1) {
-        // 1. Read byte from the Python HIL script
+void uartInputTask(void *pvParameters){
+	uint8_t rxByte;
+   	Event_t incomingEvent;
+   	while(1) {
+    	// 1. Read byte from the Python HIL script
         rxByte = UART0_ReceiveChar(); 
         incomingEvent = (Event_t)rxByte;
 
@@ -40,45 +40,34 @@
         else {
             // Normal priority (buttons, releases, conflicts): Push to the BACK of the queue
             xQueueSendToBack(evQueue, &incomingEvent, portMAX_DELAY); 
-        }
-				vTaskDelay(pdMS_TO_TICKS(10));
-    }
- }
- 
- int main(){
-	 
-	  //for testing
-	  UART0_Init();
-
-    // initialize GPIO
-    GPIO_AllInit();
-    InputTask_Init();
-
-    // initialize event queues
-	  xButtonInterruptQueue = xQueueCreate(20, sizeof(ButtonId_t));
-
-    if (xButtonInterruptQueue == NULL)
-
-    {
-		while (1);
+    	}
+		vTaskDelay(pdMS_TO_TICKS(10));
 	}
+}
 
-	 //Task Creation
-	 /*
-	 priorites:
-	  Medium  -> 2
-	  Hight   -> 3
-	  Highest -> 4
-	 */
-	 //how much stack do i allocate??
-   xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
-	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);	 
-	 xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
-	 
-	 //call system init functions before scheduler
-	 int_IPComm();
-	 
-	 
-	 vTaskStartScheduler();
-	 while(1);
- }
+int main(){
+	// for testing
+	UART0_Init();
+
+	// initialize GPIO
+	GPIO_AllInit();
+	InputTask_Init();
+
+	//Task Creation
+	/*
+	priorites:
+	Medium  -> 2
+	Hight   -> 3
+	Highest -> 4
+	*/
+	//how much stack do i allocate??
+	xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
+	xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);
+	xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
+
+	//call system init functions before scheduler
+	int_IPComm();
+
+	vTaskStartScheduler();
+	while(1);
+}

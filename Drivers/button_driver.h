@@ -50,6 +50,7 @@ typedef enum
 
 /* Init */
 void GPIO_AllInit(void);
+extern QueueHandle_t xButtonInterruptQueue;
 
 /* Read Buttons */
 uint8_t Read_DriverOpen(void);

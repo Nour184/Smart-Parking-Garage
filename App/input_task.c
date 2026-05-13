@@ -40,14 +40,13 @@ static ButtonObject_t obstacleBtn;
 
 static void SendEvent(EventType_t type)
 {
-    // 1. Declare the variable ONCE at the top of the function
     Event_t eventToSend;
 
     switch (type)
     {
         case EVT_DRIVER_OPEN_PRESS:
         case EVT_DRIVER_OPEN_AUTO:
-            eventToSend = EV_DRIVER_OPEN_GATE; // 2. Just assign the value
+            eventToSend = EV_DRIVER_OPEN_GATE;
             xQueueSendToBack(evQueue, &eventToSend, portMAX_DELAY);
             break;
 
