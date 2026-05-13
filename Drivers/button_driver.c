@@ -65,7 +65,7 @@ static void GPIOB_Init(void)
     SYSCTL->RCGCGPIO |= (1U << 1);
     while ((SYSCTL->PRGPIO & (1U << 1)) == 0);
 
-		GPIOB->LOCK = 0x4C4F434B;
+	GPIOB->LOCK = 0x4C4F434B;
     GPIOB->CR |= 0x1F;
 
     GPIOB->AMSEL &= ~0x1F;
@@ -74,7 +74,7 @@ static void GPIOB_Init(void)
 
     GPIOB->DIR &= ~0x1F;
     GPIOB->DEN |=  0x1F;
-    GPIOB->PUR |=  0x1F;
+    GPIOB->PUR &= ~0x1F;
 
     /* Interrupt BOTH edges: press + release */
     GPIOB->IS  &= ~0x1F;
@@ -104,11 +104,12 @@ void GPIO_AllInit(void)
 /* Active-low buttons: pressed = 0, released = 1 */
 uint8_t Read_DriverOpen(void)    { return ((GPIOF->DATA & DRIVER_OPEN_PIN)    == 0U); }
 uint8_t Read_DriverClose(void)   { return ((GPIOF->DATA & DRIVER_CLOSE_PIN)   == 0U); }
-uint8_t Read_SecurityOpen(void)  { return ((GPIOB->DATA & SECURITY_OPEN_PIN)  == 0U); }
-uint8_t Read_SecurityClose(void) { return ((GPIOB->DATA & SECURITY_CLOSE_PIN) == 0U); }
-uint8_t Read_OpenLimit(void)     { return ((GPIOB->DATA & OPEN_LIMIT_PIN)     == 0U); }
-uint8_t Read_ClosedLimit(void)   { return ((GPIOB->DATA & CLOSED_LIMIT_PIN)   == 0U); }
-uint8_t Read_Obstacle(void)      { return ((GPIOB->DATA & OBSTACLE_PIN)       == 0U); }
+/* Active-high buttons: pressed = 1, released = 0 */
+uint8_t Read_SecurityOpen(void)  { return ((GPIOB->DATA & SECURITY_OPEN_PIN)  != 0U); }
+uint8_t Read_SecurityClose(void) { return ((GPIOB->DATA & SECURITY_CLOSE_PIN) != 0U); }
+uint8_t Read_OpenLimit(void)     { return ((GPIOB->DATA & OPEN_LIMIT_PIN)     != 0U); }
+uint8_t Read_ClosedLimit(void)   { return ((GPIOB->DATA & CLOSED_LIMIT_PIN)   != 0U); }
+uint8_t Read_Obstacle(void)      { return ((GPIOB->DATA & OBSTACLE_PIN)       != 0U); }
 
 /* ================= ISR ================= */
 
