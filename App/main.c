@@ -10,20 +10,24 @@
  */
 
  #include "gate_controller.h"
+ #include "safety_monitor.h"
+ #include "led_task.h"
+ #include "test_config.h"
+ #include "input_task.h"
+ #include "button_driver.h"
  
+ #if TEST_SAFETY
+ #include "shared_queues.h"
+ #endif
  
- /*
- will add a mock task (input task) here for testing purposes!!
- */
- 
- void uartInputTask(void *pvParameters){
-	 uint8_t rxByte;
-   Event_t incomingEvent;
-   while(1) {
-        // 1. Read byte from the Python HIL script
+void uartInputTask(void *pvParameters){
+	uint8_t rxByte;
+   	Event_t incomingEvent;
+   	while(1) {
+    	// 1. Read byte from the Python HIL script
         rxByte = UART0_ReceiveChar(); 
         incomingEvent = (Event_t)rxByte;
-
+				#if TEST_FSM
         // 2. Route the event based on your Team 1 specifications
         if (incomingEvent == EV_LIMIT_OPENING || incomingEvent == EV_LIMIT_CLOSING) {
             // High priority: Push to the FRONT of the queue so the FSM stops immediately
@@ -40,6 +44,12 @@
             // Normal priority (buttons, releases, conflicts): Push to the BACK of the queue
             xQueueSendToBack(evQueue, &incomingEvent, portMAX_DELAY); 
         }
+				#endif
+				#if TEST_SAFETY
+				if(incomingEvent == 0x0){
+					xSemaphoreGive(obstacleSemaphore);
+				}
+				#endif
 				vTaskDelay(pdMS_TO_TICKS(10));
     }
  }
@@ -47,7 +57,14 @@
  int main(){
 	 
 	 //for testing
-	 UART0_Init(); 
+	 // UART0_Init(); 
+	 #if TEST_SAFETY
+	 UART0_SendChar('s');
+	 #endif
+	 
+	 portF_led_init();
+   GPIO_AllInit();
+   InputTask_Init();
 	 
 	 //Task Creation
 	 /*
@@ -57,8 +74,11 @@
 	  Highest -> 4
 	 */
 	 //how much stack do i allocate??
-	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);	 
-	 xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
+	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);
+	 xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
+	 // xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
+   xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
+	 xTaskCreate(LedTask, "Controls System Leds", 150, NULL, 2, NULL);
 	 
 	 //call system init functions before scheduler
 	 int_IPComm();

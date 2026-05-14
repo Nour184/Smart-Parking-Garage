@@ -17,7 +17,7 @@ typedef enum {
 	EV_LIMIT_CLOSING,
 	
 	//release events for handling manual mode
-  EV_DRIVER_OPEN_RELEASED,
+    EV_DRIVER_OPEN_RELEASED,
 	EV_DRIVER_CLOSE_RELEASED,
 	EV_SECURITY_OPEN_RELEASED,
 	EV_SECURITY_CLOSE_RELEASED,
@@ -28,14 +28,22 @@ typedef enum {
 	
 	EV_DETECT_OBSTACLE, //TEAM 3 also sends it before executing the safety task (right after entering it) to display the state coreclty and also to handle the gate state transition right
 	EV_REVERSE_TIMEOUT  //TEAM 3 will send it after the timer(0.5 sec) is done 
-}Event_t;
+} Event_t;
+
+typedef enum{
+    EV_SET_GREEN,
+    EV_SET_RED,
+    EV_RESET_LED
+}Led_t;
 
 
 //queue and mutex handler
  extern QueueHandle_t evQueue; //shared queue used to communicate the incoming events (door open , door close, ....etc)
  extern SemaphoreHandle_t stateMutex;  //use this Mutex when accessing the gate state variable as its a shared resource!!
-
+ extern SemaphoreHandle_t obstacleSemaphore; // safety tasks blocks until obstacle semaphore is signaled
 //init mutual queues..etc
  void int_IPComm(void);
+ // used for sending commands to LED's
+ extern QueueHandle_t ledQueue;
 
 #endif

@@ -10,7 +10,7 @@
  
 
 #include "gate_controller.h"
-
+#include "test_config.h"
 
 //implement the function that is called by xTaskCreate() in main!!
 
@@ -21,7 +21,7 @@ void gateControlTask(void* pvParameters){
 	while(1){
 		//continously read from queue
 		BaseType_t status = xQueueReceive(evQueue,&incomingEV,portMAX_DELAY); //block if no incoming events found
-		
+
 		if(status == pdTRUE){
 		//try to acquire the mutex to update the gate state
 		 if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE){ //block untill i can acquire the mutex
@@ -34,9 +34,11 @@ void gateControlTask(void* pvParameters){
 			 
 			 xSemaphoreGive(stateMutex);
 			 //for testing script
+			 #if TEST_FSM
 			 UART0_SendChar((uint8_t)ownerBefore); 
 			 UART0_SendChar((uint8_t)state);
 			 UART0_SendChar((uint8_t)ownerAfter);
+			 #endif
 		 }
 	 }
 	}
