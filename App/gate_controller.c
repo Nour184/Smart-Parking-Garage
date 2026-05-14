@@ -11,6 +11,7 @@
 
 #include "gate_controller.h"
 #include "test_config.h"
+#include <stdio.h>
 
 // String lookup table for Gate States printing
 static const char* GateStateStrings[] = {
@@ -40,39 +41,53 @@ static const char* EventStrings[] = {  // for printing the exact event names
 };
 
 void gateControlTask(void* pvParameters){
-	//init gate state and ownership
-	initGateStatus();
-	Event_t incomingEV;
-	while(1){
-		//continously read from queue
-		BaseType_t status = xQueueReceive(evQueue,&incomingEV,portMAX_DELAY); //block if no incoming events found
+    // Init gate state and ownership
+    initGateStatus();
+    Event_t incomingEV;
+    
+    while(1){
+        // Continuously read from queue
+        BaseType_t status = xQueueReceive(evQueue, &incomingEV, portMAX_DELAY);
 
-		if(status == pdTRUE){
-		//try to acquire the mutex to update the gate state
-			vPrintString("[GATE TASK] Woke up! Processing Event: ");
-			vPrintString((char*)EventStrings[incomingEV]);
-			vPrintString("\r\n");
-			
-			if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE){ //block untill i can acquire the mutex
-			 vPrintString("[GATE TASK] Acquired the Gate State Mutex. \n");
-			 CmdOwner_t ownerBefore = getCurrentOwner(); //for testing script
-			 
-			 GateState_t state = updateGateStatus(incomingEV); //update the gate status 
-			 
-			 CmdOwner_t ownerAfter = getCurrentOwner(); //for testing script
-				
-			 vPrintString("[GATE TASK] FSM Updated. New State: ");
-			 vPrintString((char*)GateStateStrings[state]);
-			 vPrintString("\r\n");
-			 vPrintString("[GATE TASK] Releasing the Gate State Mutex. \n");
-			 xSemaphoreGive(stateMutex);
-			 //for testing script
-			 #if TEST_FSM
-			 UART0_SendChar((uint8_t)ownerBefore); 
-			 UART0_SendChar((uint8_t)state);
-			 UART0_SendChar((uint8_t)ownerAfter);
-			 #endif
-		 }
-	 }
-	}
+        if(status == pdTRUE){
+            // Safely resolve the event string using your lookup table
+            // Adding \r\n keeps your serial monitor formatting perfectly clean.
+            //static char outputBuffer_temp[64];
+            //sprintf(outputBuffer_temp, "[GATE TASK] Pulled Event: %s\r\n", EventStrings[incomingEV]);
+            
+            //char *strPtr = outputBuffer_temp;
+            //xQueueSend(printQueue, &strPtr, 0);
+            
+            // Artificial Delay for TC19
+            //vTaskDelay(pdMS_TO_TICKS(2000)); 
+            
+            // Try to acquire the mutex to update the gate state
+            if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE){ 
+							  //xQueueSend(printQueue, (void*)&(char*){"[GATE TASK] Mutex Acquired! Simulating heavy load...\r\n"}, 0); // for TC 20
+
+                CmdOwner_t ownerBefore = getCurrentOwner(); 
+                GateState_t state = updateGateStatus(incomingEV); 
+								//for(volatile uint32_t i = 0; i < 8000000; i++) {}
+
+                CmdOwner_t ownerAfter = getCurrentOwner(); 
+                
+                static char outputBuffer[64];
+                sprintf(outputBuffer, "[current state]: %s\r\n", GateStateStrings[state]);
+                
+                // Reusing strPtr safely to point to the new buffer
+                char* strPtr = outputBuffer;
+                xQueueSend(printQueue, &strPtr, 0);
+									
+                //xQueueSend(printQueue, (void*)&(char*){"[GATE TASK] Processing done. Releasing Mutex...\r\n"}, 0); // for TC 20
+                xSemaphoreGive(stateMutex);
+                
+                // For testing script
+                #if TEST_FSM
+                UART0_SendChar((uint8_t)ownerBefore); 
+                UART0_SendChar((uint8_t)state);
+                UART0_SendChar((uint8_t)ownerAfter);
+                #endif
+            }
+        }
+    }
 }

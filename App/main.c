@@ -15,6 +15,7 @@
  #include "test_config.h"
  #include "input_task.h"
  #include "button_driver.h"
+ #include "uart_task.h"
  
  #if TEST_SAFETY
  #include "shared_queues.h"
@@ -22,45 +23,60 @@
  
  void uartInputTask(void *pvParameters); //used for uart unit testing
  
- int main(){
-	 
-	 //for testing
-	 // UART0_Init(); 
-	 #if TEST_SAFETY
-	 UART0_SendChar('s');
-	 #endif
-	 
-	 /*
-	 priorites:
-	  Medium  -> 2
-	  Hight   -> 3
-	  Highest -> 4
-	 */
-	 //Task Creation
-	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);
-	 xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
-   xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
-	 xTaskCreate(LedTask, "Controls System Leds", 150, NULL, 2, NULL);
-	 
-	 vPrintString("Created 4 Tasks Successfuly.........\n");
-	 vPrintString("--> Gate Control Task with Priority 2\n");
-	 vPrintString("--> Input Task with Priority 3\n");
-	 vPrintString("--> safety task for obstacle handling with Priority 4\n");
-	 vPrintString("--> Led Task with Priority 2\n");
-	 
-	 // xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
-	 
-	 //call system init functions before scheduler
-	 int_IPComm();
-	 portF_led_init();
-   GPIO_AllInit();
-   InputTask_Init();
-	 
-	 
-	 
-	 vTaskStartScheduler();
-	 while(1);
- }
+#include "gate_controller.h"
+#include "safety_monitor.h"
+#include "led_task.h"
+#include "test_config.h"
+#include "input_task.h"
+#include "button_driver.h"
+#include "uart_task.h"
+
+#if TEST_SAFETY
+#include "shared_queues.h"
+#endif
+
+void uartInputTask(void *pvParameters); 
+
+int main(){
+    UART0_Init(); 
+    portF_led_init();
+    GPIO_AllInit();
+    InputTask_Init();
+
+    #if TEST_SAFETY
+    UART0_SendChar('s');
+    #endif
+
+    // Global Inter-Process Communication (Queues/Mutexes) Initialization
+    // Guarantees handles are valid before any Task Control Block references them.
+    int_IPComm();
+
+    // Safe compound literal cast pointing to static Flash memory
+    xQueueSend(printQueue, &(char*){"Gate Ctrl System Started...\r\n"}, 0);
+
+    /*
+     Task Priorities:
+      Low     -> 1 (UART output stream)
+      Medium  -> 2 (Gate & LEDs)
+      High    -> 3 (Input sampling)
+      Highest -> 4 (Safety critical overrides)
+    */
+    
+    xTaskCreate(gateControlTask, "Gate Controller", 150, NULL, 2, NULL);
+    xTaskCreate(vInputTask,      "Input Driver",    256, NULL, 3, NULL);
+    xTaskCreate(safetyTask,      "Safety Monitor",  150, NULL, 4, NULL);
+    xTaskCreate(LedTask,         "System LEDs",     150, NULL, 2, NULL);
+    xTaskCreate(uartTask,        "UART TX Engine",  150, NULL, 1, NULL);
+    
+    // xTaskCreate(uartInputTask, "Input Mocker",   300, NULL, 3, NULL);
+
+    vTaskStartScheduler();
+    
+    // Execution should never reach this trap unless heap allocation fails during boot
+    while(1);
+}
+
+// ... uartInputTask remains unchanged ...
  
  void uartInputTask(void *pvParameters){
 	uint8_t rxByte;

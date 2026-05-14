@@ -273,8 +273,8 @@ void vInputTask(void *pvParameters)
         {
             vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
 					   
-					  vPrintStringAndNumber("[INPUT TASK] Valid Button Press Detected. ID: ", buttonId);
-					  vPrintString("\n");
+					  //vPrintStringAndNumber("[INPUT TASK] Valid Button Press Detected. ID: ", buttonId);
+					  //vPrintString("\n");
 
             if (IsSecurityConflict())
             {

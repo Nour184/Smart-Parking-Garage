@@ -39,11 +39,10 @@ void UART0_SendChar(uint8_t data) {
 }
 
 void UART0_send_string(const char* msg){
-			  while(*msg != '\n' && *msg != '\0'){
+			  while(*msg != '\0'){
 					UART0_SendChar(*msg);
 					msg++;
 				}
-				UART0_SendChar('\0');
 }
 
 uint8_t UART0_ReceiveChar(void) {

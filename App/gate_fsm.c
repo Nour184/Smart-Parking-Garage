@@ -9,6 +9,7 @@
 	 //set init state var to IDLE CLOSED 
 	 currentGateState = IDLE_CLOSED;
 	 currentOwner = NONE;
+	 xQueueSend(printQueue, (void*)&(char*){"[current state] IDLE_CLOSED\n"}, 0);
  }
  
  GateState_t getCurrentGateState(void){  //must acquire the mutex first!!
@@ -273,8 +274,11 @@ uint8_t attemptSafetyReverse(void) {
     uint8_t reversed = 0; // flag to return if we actually reversed
     
     //acquire the mutex once for the whole transaction
+		//xQueueSend(printQueue, (void*)&(char*){"[SAFETY TASK] Attempting to acquire Mutex...\r\n"}, 0); // for TC 20
     if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE) {
-        vPrintString("[SAFETY TASK] MUTEX ACQUIRED.\r\n");
+        //vPrintString("[SAFETY TASK] MUTEX ACQUIRED.\r\n");
+				//xQueueSend(printQueue, (void*)&(char*){"[SAFETY TASK] MUTEX SECURED. Executing safety override.\r\n"}, 0); // for TC 20
+
         if(currentGateState == CLOSING) {
             currentGateState = REVERSING;
             currentOwner = NONE;

@@ -21,20 +21,25 @@ void safetyTask(void *pvParameters)
         xSemaphoreTake(obstacleSemaphore, portMAX_DELAY); // Block until I recieve an obstacle
 			  if (attemptSafetyReverse() == 1) {
 
-					vPrintString("[SAFETY TASK] OBSTACLE DETECTED! Forcing REVERSE state.\r\n");
+					//vPrintString("[SAFETY TASK] OBSTACLE DETECTED! Forcing REVERSE state.\r\n");
+					xQueueSend(printQueue, (void *)&(char *){"[Safety | Current State] Reversing\n"}, 0);
 					
 				  xQueueReset(ledQueue); // Flush the queue
 				  const Led_t ev_led = EV_SET_GREEN;
+					const Led_t reset_led = EV_RESET_LED;
+					xQueueSend(ledQueue, (void *)&reset_led, 0);
 				  xQueueSend(ledQueue, (void *)(&ev_led), 0); // Send ev_led to LED Task, then block.
 					
 				  #if TEST_SAFETY
 				  const char* msg = "Reverse started\n";
 				  UART0_send_string(msg);
 				  #endif
-					vPrintString("[SAFETY TASK] REVERSING for 0.5 Seconds.\r\n");
+					//vPrintString("[SAFETY TASK] REVERSING for 0.5 Seconds.\r\n");
           vTaskDelay(pdMS_TO_TICKS(REVERSE_DELAY_MS)); // reverse for a certain period.
           forceGateState(STOPPED_MIDWAY); // change state back so inputs are not ignored by FSM.
-			 
+					xQueueSend(printQueue, (void *)&(char *){"[Safety | Current State] STOPPED_MIDWAY\n"}, 0);
+
+					
 				  const Led_t ev_reset_led = EV_RESET_LED;
 				  xQueueSend(ledQueue, (void *)(&ev_reset_led), 0); // send ev_reset_led to LED Task, then block on obstacle semphr
           xQueueReset(evQueue);

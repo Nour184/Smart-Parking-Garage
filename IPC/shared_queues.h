@@ -42,6 +42,7 @@ typedef enum{
  extern QueueHandle_t evQueue; //shared queue used to communicate the incoming events (door open , door close, ....etc)
  extern SemaphoreHandle_t stateMutex;  //use this Mutex when accessing the gate state variable as its a shared resource!!
  extern SemaphoreHandle_t obstacleSemaphore; // safety tasks blocks until obstacle semaphore is signaled
+ extern QueueHandle_t printQueue;
 //init mutual queues..etc
  void int_IPComm(void);
  // used for sending commands to LED's
