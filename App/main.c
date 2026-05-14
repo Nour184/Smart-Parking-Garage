@@ -20,7 +20,49 @@
  #include "shared_queues.h"
  #endif
  
-void uartInputTask(void *pvParameters){
+ void uartInputTask(void *pvParameters); //used for uart unit testing
+ 
+ int main(){
+	 
+	 //for testing
+	 // UART0_Init(); 
+	 #if TEST_SAFETY
+	 UART0_SendChar('s');
+	 #endif
+	 
+	 /*
+	 priorites:
+	  Medium  -> 2
+	  Hight   -> 3
+	  Highest -> 4
+	 */
+	 //Task Creation
+	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);
+	 xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
+   xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
+	 xTaskCreate(LedTask, "Controls System Leds", 150, NULL, 2, NULL);
+	 
+	 vPrintString("Created 4 Tasks Successfuly.........\n");
+	 vPrintString("--> Gate Control Task with Priority 2\n");
+	 vPrintString("--> Input Task with Priority 3\n");
+	 vPrintString("--> safety task for obstacle handling with Priority 4\n");
+	 vPrintString("--> Led Task with Priority 2\n");
+	 
+	 // xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
+	 
+	 //call system init functions before scheduler
+	 int_IPComm();
+	 portF_led_init();
+   GPIO_AllInit();
+   InputTask_Init();
+	 
+	 
+	 
+	 vTaskStartScheduler();
+	 while(1);
+ }
+ 
+ void uartInputTask(void *pvParameters){
 	uint8_t rxByte;
    	Event_t incomingEvent;
    	while(1) {
@@ -52,38 +94,4 @@ void uartInputTask(void *pvParameters){
 				#endif
 				vTaskDelay(pdMS_TO_TICKS(10));
     }
- }
- 
- int main(){
-	 
-	 //for testing
-	 // UART0_Init(); 
-	 #if TEST_SAFETY
-	 UART0_SendChar('s');
-	 #endif
-	 
-	 portF_led_init();
-   GPIO_AllInit();
-   InputTask_Init();
-	 
-	 //Task Creation
-	 /*
-	 priorites:
-	  Medium  -> 2
-	  Hight   -> 3
-	  Highest -> 4
-	 */
-	 //how much stack do i allocate??
-	 xTaskCreate(gateControlTask, "gate controller task",150, NULL,2,NULL);
-	 xTaskCreate(vInputTask, "Input", 256, NULL, 3, NULL);
-	 // xTaskCreate(uartInputTask,"input task moker",300,NULL,3,NULL);
-   xTaskCreate(safetyTask,"safety task for obstacle handling", 150, NULL,4,NULL);
-	 xTaskCreate(LedTask, "Controls System Leds", 150, NULL, 2, NULL);
-	 
-	 //call system init functions before scheduler
-	 int_IPComm();
-	 
-	 
-	 vTaskStartScheduler();
-	 while(1);
  }

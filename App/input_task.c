@@ -272,6 +272,9 @@ void vInputTask(void *pvParameters)
         if (xQueueReceive(xButtonInterruptQueue, &buttonId, portMAX_DELAY) == pdPASS)
         {
             vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
+					   
+					  vPrintStringAndNumber("[INPUT TASK] Valid Button Press Detected. ID: ", buttonId);
+					  vPrintString("\n");
 
             if (IsSecurityConflict())
             {

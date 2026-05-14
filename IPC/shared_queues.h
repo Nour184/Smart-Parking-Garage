@@ -4,10 +4,11 @@
  #include "FreeRTOS.h"
  #include "queue.h"
  #include "semphr.h"
+ #include "basic_io.h"
  
  
 typedef enum {
-	//do we add a start event to start the system ??
+
 	EV_DRIVER_OPEN_GATE,
 	EV_DRIVER_CLOSE_GATE,
 	EV_SECURITY_OPEN_GATE,
@@ -17,17 +18,17 @@ typedef enum {
 	EV_LIMIT_CLOSING,
 	
 	//release events for handling manual mode
-    EV_DRIVER_OPEN_RELEASED,
+  EV_DRIVER_OPEN_RELEASED,
 	EV_DRIVER_CLOSE_RELEASED,
 	EV_SECURITY_OPEN_RELEASED,
 	EV_SECURITY_CLOSE_RELEASED,
 	
 	//conflict events
-	EV_DRIVER_CONFLICT, //TEAM 1 sends this when they catch simulatneous open and close signals(AT THE SAME TIME) FROM THE DRIVER'S PANEL ONLY
-	EV_SECURITY_CONFLICT,//TEAM 1 sends this when they catch simulatneous open and close signals(AT THE SAME TIME) FROM THE SECURITY'S PANEL ONLY
+	EV_DRIVER_CONFLICT, //send this when we catch simulatneous open and close signals(AT THE SAME TIME) FROM THE DRIVER'S PANEL ONLY
+	EV_SECURITY_CONFLICT,//send this when we catch simulatneous open and close signals(AT THE SAME TIME) FROM THE SECURITY'S PANEL ONLY
 	
-	EV_DETECT_OBSTACLE, //TEAM 3 also sends it before executing the safety task (right after entering it) to display the state coreclty and also to handle the gate state transition right
-	EV_REVERSE_TIMEOUT  //TEAM 3 will send it after the timer(0.5 sec) is done 
+	EV_DETECT_OBSTACLE, 
+	EV_REVERSE_TIMEOUT 
 } Event_t;
 
 typedef enum{
