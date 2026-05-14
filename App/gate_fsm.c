@@ -237,6 +237,7 @@
 //logic for updating the gate state based on the input events form the queue
  GateState_t updateGateStatus(Event_t ev){
 	 switch(currentGateState){
+		 vPrintStringAndNumber("[GATE TASK] Gate State Before Update: ", currentGateState);
 		 case IDLE_CLOSED:
 			 handle_IdleClosed(ev);
 			 break;
@@ -265,5 +266,23 @@ void forceGateState(GateState_t newState)
     xSemaphoreTake(stateMutex, portMAX_DELAY);
     currentGateState = newState;
     currentOwner = NONE;
-    xSemaphoreGive(stateMutex); }
+    xSemaphoreGive(stateMutex); 
+}
+
+uint8_t attemptSafetyReverse(void) {
+    uint8_t reversed = 0; // flag to return if we actually reversed
+    
+    //acquire the mutex once for the whole transaction
+    if(xSemaphoreTake(stateMutex, portMAX_DELAY) == pdTRUE) {
+        vPrintString("[SAFETY TASK] MUTEX ACQUIRED.\r\n");
+        if(currentGateState == CLOSING) {
+            currentGateState = REVERSING;
+            currentOwner = NONE;
+            reversed = 1; 
+        }
+        
+        xSemaphoreGive(stateMutex);
+    }
+    return reversed;
+}
 

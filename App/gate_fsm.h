@@ -21,7 +21,8 @@ typedef enum {
 //functions declaration 
 void initGateStatus(void);
 GateState_t getCurrentGateState(void);
-CmdOwner_t getCurrentOwner(void); //get current owner notice i havent locked it with a mutex as no one should call it iam just using it for testing
-void forceGateState(GateState_t);// used by the safety task to force the state directly.
-GateState_t updateGateStatus(Event_t); //check whether i need an input here or not 
+CmdOwner_t getCurrentOwner(void);
+void forceGateState(GateState_t);
+uint8_t attemptSafetyReverse(void); // used by the safety task to force the state directly.
+GateState_t updateGateStatus(Event_t);
 #endif
